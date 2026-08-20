@@ -165,6 +165,47 @@ from the laptop.
 
 ---
 
+## Image generation with ComfyUI
+
+ComfyUI is ODS's image-generation service (FLUX.1). It is **GPU-only** — run it
+on the desktop, not the laptop.
+
+**On the desktop** (in `%USERPROFILE%\ods` on Windows):
+
+```powershell
+.\ods.ps1 enable comfyui
+```
+
+This pulls the `ods-comfyui` service on port **8188**; image models download on
+first use.
+
+**From the laptop**, open in a browser:
+
+```
+http://<desktop-ip>:8188
+```
+
+The desktop's GPU renders the images; the laptop is just the UI.
+
+> Check it's enabled: `.\ods.ps1 status` should list `ods-comfyui`.
+
+---
+
+## Verify the full setup
+
+On the laptop, confirm each layer works:
+
+| Layer | Check |
+|---|---|
+| Model API | `Invoke-RestMethod "http://<desktop-ip>:11434/v1/models"` returns JSON |
+| Chat UI | `http://<desktop-ip>:3000` loads |
+| Dashboard | `http://<desktop-ip>:3001` loads |
+| ComfyUI | `http://<desktop-ip>:8188` loads |
+| opencode local model | `opencode models llama-server` shows the desktop's model |
+| opencode completion | `opencode run "hi" -m llama-server/<model-file>.gguf` replies |
+
+---
+
 ## Security notes (important)
 
 - **`-Lan` / `BIND_ADDRESS=0.0.0.0` exposes the model API to your whole LAN.**
@@ -228,6 +269,8 @@ Run from the ODS runtime directory (`%USERPROFILE%\ods` on Windows):
 .\ods.ps1 model swap T3         # switch to a bigger tier (e.g. 32B)
 .\ods.ps1 logs llama-server     # tail model server logs
 .\ods.ps1 restart llama-server  # apply .env changes
+.\ods.ps1 enable comfyui        # turn on image generation (GPU)
+.\ods.ps1 disable comfyui       # turn it off again
 ```
 
 ---
